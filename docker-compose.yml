@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - HTTP_PORT=8080
+      - GRPC_AUTH_SERVER=auth-service:50051
+      - GRPC_DOC_SERVER=document-service:50052
+    depends_on:
+      - auth-service
+      - document-service
+    networks:
+      - app-network
+
+  auth-service:
+    image: auth-service:latest
+    ports:
+      - "50051:50051"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=auth_db
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=lokrr_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+  document-service:
+    image: lokrr-document-service-app
+    ports:
+      - "50052:50052"
+    environment:
+
+    depends_on:
+      - postgres
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
