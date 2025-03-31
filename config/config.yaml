@@ -1,4 +1,9 @@
 server:
   http_port: "8080"
 grpc:
-  auth_service_address: "${GRPC_AUTH_SERVER}"
+  auth_service_address: "localhost:50051"
+  doc_service_address: "localhost:50052"
+cors:
+  allowed_origins: "${CORS_ALLOWED_ORIGINS}"
+  allowed_methods: "${CORS_ALLOWED_METHODS}"
+  allowed_headers: "${CORS_ALLOWED_HEADERS}"
